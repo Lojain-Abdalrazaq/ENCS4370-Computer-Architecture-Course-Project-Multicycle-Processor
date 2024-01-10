@@ -1,0 +1,15 @@
+<internal_error>
+	<executable>quartus.exe</executable>
+	<sub_system>VDB</sub_system>
+	<file>/quartus/db/vdb/vdb_value_bus.cpp</file>
+	<line>4101</line>
+	<callstack>
+	0x03cba584: db_vdb + 0x5a584 (?get_element@VDB_VALUE_BUS@@QBIPAVVDB_VALUE@@I@Z + 0x54)
+	</callstack>
+	<error>loc &lt; m_value-&gt;size()</error>
+	<date>Tue Jun 20 22:01:35 2023</date>
+	<version>Quartus II Version 9.0 Build 132 02/25/2009 SJ Web Edition</version>
+	<full_error>loc &lt; m_value-&gt;size()
+Quartus II Version 9.0 Build 132 02/25/2009 SJ Web Edition </full_error>
+</internal_error>
+

@@ -1,0 +1,62 @@
+module insttruction_memory(
+	input reset,
+	input clk,
+	input [1:0] PCSrc,
+	input [31:0] JA, // jumb address 
+	input [31:0] BTA,// branch address 
+	output reg [31:0] nextpc,
+	output reg [31:0] instruction,
+	output reg valid
+);
+
+	reg [31:0] mem [14:0];
+	initial begin
+		mem[0] = 32'b00000100110000000111000000000000; // AND 32'b00000100110000000111000000000000;
+		mem[1] = 32'b00000001110000000000000000100100; // ADD 32'b00001100110000000111000000000000;
+		mem[2] = 32'b00010100110000000111000000000000; // SUB
+		mem[3] = 32'b00011001010000001010000000000000; // CAM // ************  Finish the R-Type *******************/
+		mem[4] = 32'b00000001110000000000000000100100; // ANDI 
+		mem[5] = 32'b00001001110000000000000000100100; // ADDI // ************  Finish the I-Type (ALU_type) *******************/
+		mem[6] = 32'b00010001110000000000000000110100; // LW
+		mem[7] = 32'b00011001110000000000000000110100; // SW // ************  Finish the I-Type (Mem_type) *******************/
+		mem[8] = 32'b00100001110011100000000010000100; // BEQ // ************  Finish the I-Type (Br_type) *******************/
+		mem[9] = 32'b00000000000000000000000001000010; // J // immd = 8 
+		mem[10]= 32'b00001000000000000001111101000010; // JAL / ************  Finish the J-Type  *******************/
+		mem[11]= 32'b00000001110010100000000010000110; // SLL by 1 shift amount.
+		mem[12]= 32'b00001001110010100000000010000110; // SLR by 1 shift amount.
+		mem[13]= 32'b00010001110010100010000000000110; // SLLV by 2 shift amount.
+		mem[14]= 32'b00011001110010100010000000000110; // SLRV by 2 shift amount./ ************  Finish the S-Type  *******************/
+	end
+	
+	reg fetchValidReg;
+	
+	// Register for updating the next PC value
+	always @(posedge clk) begin
+		if (reset) begin
+			fetchValidReg <= 1'b0;
+			nextpc <= 32'd0;
+		end
+		else begin
+			fetchValidReg <= 1'b1;
+			case (PCSrc)
+				2'b00: nextpc <= nextpc + 2'd1; // PC = PC + 4
+				2'b01: nextpc <= nextpc + JA; // PC = PC + Jumb_address
+				2'b10: nextpc <= nextpc + 2'd1; // PC = imm17 + PC
+				default: nextpc <= nextpc + 2'd1; // Default case for unknown PCSrc value
+			endcase
+		end
+	end
+	
+	// Register for updating the instruction and valid signal
+	always @(posedge clk) begin
+		if (reset) begin
+			valid <= 1'b0;
+			instruction <= 32'd0;
+		end
+		else begin
+			valid <= fetchValidReg;
+			instruction <= mem[nextpc];
+		end
+	end
+	
+endmodule

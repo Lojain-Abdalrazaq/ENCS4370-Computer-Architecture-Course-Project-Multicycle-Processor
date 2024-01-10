@@ -1,0 +1,52 @@
+module ALU(
+	input clk,
+	input [31:0] rs1, // busB
+	input [31:0] rs2, // busA
+	input [4:0] func,
+	input [1:0] typ,     // Rt -> 00 // iMM 14 -> 01 // imm 24 -> 10
+	input [13:0] immd14, // input SA 
+	output reg [31:0] constant,
+	output reg [31:0] ALU_result
+);
+
+reg [31:0] immd32; 		
+always @(posedge clk) begin
+	case (func)
+		5'b00000: begin
+			case (typ)
+				2'b00: ALU_result = rs1 & rs2;  	 // R-type: AND 
+				2'b01: ALU_result = rs1 << 5'b00011; // S-type: SLL
+				2'b10: 
+					begin				
+					immd32 = {{18{immd14[13]}}, immd14}; 		
+					constant <= immd32;
+					ALU_result = rs1 & constant; 	 // I-type: ANDI				
+					end
+				default: ALU_result = 32'hxxxx_xxxx; // Handle undefined typ value
+			endcase
+		end
+		5'b00001: begin
+			case (typ)
+				2'b00: ALU_result = rs1 + rs2;       // R-type: ADD 
+				2'b10: 
+					 begin
+					 immd32 = {{18{immd14[13]}}, immd14}; 
+					 constant <= immd32;
+					 ALU_result = rs1 + constant; 	 // I-type: ADDI 
+					 end
+				default: ALU_result = 32'hxxxx_xxxx; // Handle undefined typ value
+			endcase
+		end
+		5'b00010: begin
+			case (typ)
+				2'b00: ALU_result = rs1 - rs2;       // R-type: SUB
+				2'b01: ALU_result = rs1 >> 5'b00011; // S-type: SLL
+				default: ALU_result = 32'hxxxx_xxxx; // Handle undefined typ value
+			endcase
+		end			
+		default: ALU_result = rs1 + rs2; // Default case for unknown func value
+	endcase
+
+
+end	
+endmodule

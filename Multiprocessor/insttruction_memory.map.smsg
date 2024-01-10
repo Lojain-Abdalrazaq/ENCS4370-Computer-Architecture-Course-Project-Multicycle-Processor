@@ -1,0 +1,2 @@
+Warning (10268): Verilog HDL information at decode.v(22): always construct contains both blocking and non-blocking assignments
+Warning (10268): Verilog HDL information at ALU.v(13): always construct contains both blocking and non-blocking assignments
